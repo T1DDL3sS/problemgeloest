@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProblemDiagnosis from '../../components/ProblemDiagnosis.astro';
+import SolutionSteps from '../../components/SolutionSteps.astro';
+import ProductRecommendations from '../../components/ProductRecommendations.astro';
+import Prevention from '../../components/Prevention.astro';
+import Faq from '../../components/Faq.astro';
+import RelatedProblems from '../../components/RelatedProblems.astro';
+import problems from '../../data/problems.json';
+
+export function getStaticPaths() {
+  return problems
+    .filter((problem) => ['APPROVED', 'PUBLISHED'].includes(problem.status))
+    .map((problem) => ({
+      params: { slug: problem.slug },
+      props: { problem }
+    }));
+}
+
+const { problem } = Astro.props;
+const relatedProblems = problem.related_problem_ids
+  .map((id) => problems.find((candidate) => candidate.problem_id === id))
+  .filter(Boolean);
+const likelyCause = problem.likely_causes?.[0];
+const quickSteps = problem.solution_steps?.slice(0, 3) ?? [];
+---
+<BaseLayout title={problem.seo_title} description={problem.meta_description}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Start</a><span>›</span>
+    <span>{problem.category}</span><span>›</span>
+    <span>{problem.subcategory}</span>
+  </nav>
+
+  <a class="diagnosis-backlink" href="/#diagnose">← Nicht sicher? Fliege in 3 Fragen bestimmen</a>
+
+  <section class="hero-card">
+    <div class="eyebrow">{problem.subcategory} · {problem.cluster}</div>
+    <h1>{problem.problem}</h1>
+    <p class="hero-intro">{problem.immediate_solution}</p>
+    {likelyCause && (
+      <div class="diagnosis-line">
+        <span class="dot" aria-hidden="true"></span>
+        <span><strong>Wahrscheinlich:</strong> {likelyCause}</span>
+      </div>
+    )}
+  </section>
+
+  <section class="quick-action" aria-labelledby="quick-title">
+    <div class="eyebrow">Sofortmaßnahme</div>
+    <h2 id="quick-title">Mach das jetzt</h2>
+    <p>Mit diesen drei Schritten kommst du bei diesem Problem am schnellsten weiter.</p>
+    <div class="quick-steps">
+      {quickSteps.map((step, index) => (
+        <div class="quick-step">
+          <span class="quick-step-number">{index + 1}</span>
+          <p>{step}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <ProblemDiagnosis symptoms={problem.symptoms} causes={problem.likely_causes} />
+  <ProductRecommendations products={problem.product_slots} />
+  <SolutionSteps steps={problem.solution_steps} />
+  <Prevention items={problem.prevention} />
+  <Faq items={problem.faq} />
+  <RelatedProblems problems={relatedProblems} />
+</BaseLayout>

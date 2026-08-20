@@ -1,0 +1,22 @@
+---
+const { steps = [] } = Astro.props;
+---
+{steps.length > 0 && (
+  <section class="content-section" id="schritte">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">1</span>
+      <h2>Schritt für Schritt lösen</h2>
+    </div>
+    <ol class="steps-list">
+      {steps.map((step, index) => (
+        <li>
+          <span class="step-number">{index + 1}</span>
+          <div>
+            <strong>Schritt {index + 1}</strong>
+            <p>{step}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

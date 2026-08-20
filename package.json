@@ -1,0 +1,17 @@
+{
+  "name": "problemgeloest-mvp",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "validate": "node scripts/validate-data.mjs",
+    "build": "npm run validate && astro build",
+    "preview": "astro preview",
+    "generate:problem": "node scripts/generate-problem.mjs",
+    "batch:cluster": "node scripts/generate-cluster-batch.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.1.0"
+  }
+}

@@ -1,0 +1,124 @@
+---
+const supabaseUrl = import.meta.env.SUPABASE_URL?.replace(/\/$/, '');
+const publishableKey = import.meta.env.SUPABASE_PUBLISHABLE_KEY;
+---
+
+{Boolean(supabaseUrl && publishableKey) && (
+  <script define:vars={{ supabaseUrl, publishableKey }}>
+    (() => {
+      const SESSION_KEY = 'pg_analytics_session_id';
+      const ATTRIBUTION_KEY = 'pg_analytics_attribution';
+
+      const safeText = (value, max = 180) => {
+        if (value === null || value === undefined || value === '') return null;
+        return String(value).slice(0, max);
+      };
+
+      const getSessionId = () => {
+        try {
+          let id = sessionStorage.getItem(SESSION_KEY);
+          if (!id) {
+            id = (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`).slice(0, 80);
+            sessionStorage.setItem(SESSION_KEY, id);
+          }
+          return id;
+        } catch {
+          return (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`).slice(0, 80);
+        }
+      };
+
+      const referrerHost = (() => {
+        if (!document.referrer) return null;
+        try { return new URL(document.referrer).hostname.slice(0, 255); }
+        catch { return null; }
+      })();
+
+      const inferSource = (host) => {
+        if (!host) return 'direct';
+        const value = host.toLowerCase();
+        if (value.includes('tiktok')) return 'tiktok';
+        if (value.includes('instagram')) return 'instagram';
+        if (value.includes('youtube') || value.includes('youtu.be')) return 'youtube';
+        if (value.includes('google')) return 'google';
+        if (value.includes('bing')) return 'bing';
+        return 'referral';
+      };
+
+      const getAttribution = () => {
+        const params = new URLSearchParams(location.search);
+        const incoming = {
+          utm_source: safeText(params.get('utm_source'), 100),
+          utm_medium: safeText(params.get('utm_medium'), 100),
+          utm_campaign: safeText(params.get('utm_campaign'), 150),
+          utm_content: safeText(params.get('utm_content'), 150)
+        };
+
+        try {
+          const existingRaw = sessionStorage.getItem(ATTRIBUTION_KEY);
+          const existing = existingRaw ? JSON.parse(existingRaw) : null;
+          const hasIncoming = Object.values(incoming).some(Boolean);
+          if (hasIncoming) {
+            const attribution = {
+              ...incoming,
+              utm_source: incoming.utm_source || inferSource(referrerHost)
+            };
+            sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
+            return attribution;
+          }
+          if (existing) return existing;
+        } catch {
+          // Analytics must never block the product experience.
+        }
+
+        return {
+          ...incoming,
+          utm_source: incoming.utm_source || inferSource(referrerHost)
+        };
+      };
+
+      const sessionId = getSessionId();
+      const attribution = getAttribution();
+
+      const track = async (eventName, details = {}) => {
+        const payload = {
+          event_name: safeText(eventName, 80),
+          pathname: safeText(location.pathname, 500) || '/',
+          session_id: safeText(sessionId, 80),
+          cluster_slug: safeText(details.clusterSlug, 120),
+          problem_slug: safeText(details.problemSlug, 180),
+          solution_path_id: safeText(details.solutionPathId, 180),
+          product_type_slug: safeText(details.productTypeSlug, 180),
+          referrer_host: safeText(referrerHost, 255),
+          utm_source: safeText(attribution.utm_source, 100),
+          utm_medium: safeText(attribution.utm_medium, 100),
+          utm_campaign: safeText(attribution.utm_campaign, 150),
+          utm_content: safeText(attribution.utm_content, 150),
+          meta: details.meta && typeof details.meta === 'object' ? details.meta : {}
+        };
+
+        try {
+          await fetch(`${supabaseUrl}/rest/v1/analytics_events`, {
+            method: 'POST',
+            headers: {
+              apikey: publishableKey,
+              'Content-Type': 'application/json',
+              Prefer: 'return=minimal'
+            },
+            body: JSON.stringify(payload),
+            keepalive: true
+          });
+        } catch {
+          // Analytics failures must stay invisible to visitors.
+        }
+      };
+
+      window.problemGeloestAnalytics = {
+        track,
+        sessionId,
+        attribution
+      };
+
+      track('page_view');
+    })();
+  </script>
+)}

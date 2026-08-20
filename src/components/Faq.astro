@@ -1,0 +1,19 @@
+---
+const { items = [] } = Astro.props;
+---
+{items.length > 0 && (
+  <section class="content-section">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">i</span>
+      <h2>Häufige Fragen</h2>
+    </div>
+    <div class="faq-list">
+      {items.map((item, index) => (
+        <details class="faq-item" open={index === 0}>
+          <summary>{item.question}</summary>
+          <p>{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+)}

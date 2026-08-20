@@ -1,0 +1,16 @@
+---
+const { problems = [] } = Astro.props;
+---
+{problems.length > 0 && (
+  <section class="content-section">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">→</span>
+      <h2>Vielleicht ist es doch das?</h2>
+    </div>
+    <div class="related-links">
+      {problems.map((problem) => (
+        <a class="related-link" href={`/problem/${problem.slug}/`}>{problem.problem} →</a>
+      ))}
+    </div>
+  </section>
+)}

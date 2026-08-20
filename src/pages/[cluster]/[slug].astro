@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DatabaseProblemDiagnosis from '../../components/DatabaseProblemDiagnosis.astro';
+import Faq from '../../components/Faq.astro';
+import { getPublishedProblemPages } from '../../lib/supabase-rest';
+
+export async function getStaticPaths() {
+  const pages = await getPublishedProblemPages();
+
+  return pages
+    .filter((problem) => problem.cluster?.slug && problem.slug)
+    .map((problem) => ({
+      params: {
+        cluster: problem.cluster.slug,
+        slug: problem.slug
+      },
+      props: { problem }
+    }));
+}
+
+const { problem } = Astro.props;
+---
+<BaseLayout title={problem.seo_title || problem.name} description={problem.meta_description || problem.user_question || ''}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Start</a><span>›</span>
+    <a href={`/${problem.cluster.slug}/`}>{problem.cluster.name}</a><span>›</span>
+    <span>{problem.name}</span>
+  </nav>
+
+  <section class="hero-card">
+    <div class="eyebrow">{problem.cluster.name} · Problemlösung</div>
+    <h1>{problem.h1 || problem.name}</h1>
+    <p class="hero-intro">{problem.user_question}</p>
+    <div class="diagnosis-line">
+      <span class="dot" aria-hidden="true"></span>
+      <span><strong>In wenigen Klicks:</strong> Ursache eingrenzen → passende Lösung → Produkt nur wenn sinnvoll.</span>
+    </div>
+  </section>
+
+  <DatabaseProblemDiagnosis problem={problem} />
+
+  <Faq items={problem.faq ?? []} />
+
+  {problem.related_problems?.length > 0 && (
+    <section class="content-section">
+      <div class="section-heading">
+        <span class="section-icon" aria-hidden="true">→</span>
+        <h2>Verwandte Probleme</h2>
+      </div>
+      <div class="related-links">
+        {problem.related_problems.map((related) => (
+          <a class="related-link" href={`/${related.cluster_slug}/${related.slug}/`}>{related.name} →</a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <p class="db-source-note">Diese Seite wird beim Build aus dem zentralen ProblemGelöst-Datensatz erzeugt.</p>
+</BaseLayout>
+
+<style>
+  .db-source-note { text-align: center; font-size: .78rem; color: #88958e; margin: 26px 0 0; }
+</style>

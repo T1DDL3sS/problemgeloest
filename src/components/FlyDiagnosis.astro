@@ -1,0 +1,427 @@
+---
+import diagnosis from '../data/fly-diagnosis.json';
+import problems from '../data/problems.json';
+
+const published = problems.filter((problem) => ['APPROVED', 'PUBLISHED'].includes(problem.status));
+const resultData = Object.fromEntries(published.map((problem) => [problem.problem_id, {
+  problem_id: problem.problem_id,
+  problem: problem.problem,
+  slug: problem.slug,
+  immediate_solution: problem.immediate_solution,
+  likely_cause: problem.likely_causes?.[0] ?? '',
+  quick_steps: problem.solution_steps?.slice(0, 3) ?? [],
+  free_solution: problem.free_solution ?? null,
+  recommended_product_role: problem.recommended_product_role ?? null,
+  product_slots: problem.product_slots ?? []
+}]));
+const clientData = { diagnosis, results: resultData };
+---
+<section class="diagnosis-app" id="diagnose" aria-labelledby="diagnosis-title">
+  <div class="diagnosis-topline">
+    <span class="live-dot" aria-hidden="true"></span>
+    <span>Schnelle Fliegen-Diagnose</span>
+  </div>
+
+  <div class="diagnosis-heading">
+    <h1 id="diagnosis-title">Welche Fliegen hast du?</h1>
+    <p>{diagnosis.subtitle}</p>
+  </div>
+
+  <div class="diagnosis-card">
+    <div class="progress-row" aria-label="Fortschritt">
+      <div class="progress-step is-active" data-progress="1"><span>1</span><em>Ort</em></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-progress="2"><span>2</span><em>Aussehen</em></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-progress="3"><span>3</span><em>Hinweis</em></div>
+    </div>
+
+    <div class="answer-summary" id="answer-summary" hidden></div>
+
+    <div class="question-panel" id="question-panel">
+      <div class="question-count" id="question-count">Frage 1 von 3</div>
+      <h2 id="question-title">{diagnosis.steps.location.question}</h2>
+      <p class="question-help" id="question-help">Wähle die Antwort, die am ehesten passt. Du musst nicht sicher sein.</p>
+      <div class="diagnosis-options" id="diagnosis-options">
+        {diagnosis.steps.location.options.map((option) => (
+          <button class="diagnosis-option" type="button" data-location={option.id}>
+            <span class="option-icon" aria-hidden="true">{option.icon}</span>
+            <span class="option-copy">
+              <strong>{option.label}</strong>
+              <small>{option.hint}</small>
+            </span>
+            <span class="option-arrow" aria-hidden="true">→</span>
+          </button>
+        ))}
+      </div>
+      <button class="back-button" id="back-button" type="button" hidden>← Zurück</button>
+    </div>
+
+    <div class="diagnosis-result" id="diagnosis-result" hidden aria-live="polite"></div>
+  </div>
+
+  <p class="diagnosis-note">Dauert meist weniger als 30 Sekunden. Du kannst jederzeit zurückgehen und eine Antwort ändern.</p>
+</section>
+
+<script type="application/json" id="fly-diagnosis-data" set:html={JSON.stringify(clientData)}></script>
+<script>
+  const rawData = document.querySelector('#fly-diagnosis-data');
+  const appData = rawData ? JSON.parse(rawData.textContent || '{}') : {};
+  const config = appData.diagnosis || {};
+  const results = appData.results || {};
+
+  const state = { step: 1, location: null, appearance: null };
+  let finderStartedTracked = false;
+  const track = (eventName, details = {}) => {
+    window.problemGeloestAnalytics?.track?.(eventName, {
+      clusterSlug: 'fliegen',
+      ...details
+    });
+  };
+  const diagnosisApp = document.querySelector('#diagnose');
+  const questionTitle = document.querySelector('#question-title');
+  const questionCount = document.querySelector('#question-count');
+  const questionHelp = document.querySelector('#question-help');
+  const optionsWrap = document.querySelector('#diagnosis-options');
+  const backButton = document.querySelector('#back-button');
+  const resultWrap = document.querySelector('#diagnosis-result');
+  const questionPanel = document.querySelector('#question-panel');
+  const answerSummary = document.querySelector('#answer-summary');
+
+  const escapeHtml = (value = '') => String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+  function setProgress(step) {
+    document.querySelectorAll('[data-progress]').forEach((node) => {
+      const number = Number(node.dataset.progress);
+      node.classList.toggle('is-active', number === step);
+      node.classList.toggle('is-done', number < step || step === 4);
+    });
+  }
+
+  function getOption(group, id) {
+    return group?.options?.find((option) => option.id === id);
+  }
+
+  function renderSummary() {
+    const location = getOption(config.steps.location, state.location);
+    const appearance = getOption(config.steps.appearance, state.appearance);
+    const selected = [location, appearance].filter(Boolean);
+    if (!selected.length) {
+      answerSummary.hidden = true;
+      answerSummary.innerHTML = '';
+      return;
+    }
+    answerSummary.hidden = false;
+    answerSummary.innerHTML = selected.map((item) => `<span>${escapeHtml(item.icon)} ${escapeHtml(item.label)}</span>`).join('');
+  }
+
+  function renderOptions(options, dataName) {
+    optionsWrap.innerHTML = options.map((option) => `
+      <button class="diagnosis-option" type="button" data-${dataName}="${escapeHtml(option.id)}">
+        <span class="option-icon" aria-hidden="true">${escapeHtml(option.icon)}</span>
+        <span class="option-copy"><strong>${escapeHtml(option.label)}</strong><small>${escapeHtml(option.hint || '')}</small></span>
+        <span class="option-arrow" aria-hidden="true">→</span>
+      </button>
+    `).join('');
+  }
+
+  function resetResultMode() {
+    diagnosisApp?.classList.remove('is-result');
+    document.querySelector('.direct-solutions')?.classList.remove('is-deemphasized');
+  }
+
+  function renderStep1() {
+    state.step = 1;
+    state.location = null;
+    state.appearance = null;
+    resetResultMode();
+    setProgress(1);
+    renderSummary();
+    questionPanel.hidden = false;
+    resultWrap.hidden = true;
+    questionCount.textContent = 'Frage 1 von 3';
+    questionTitle.textContent = config.steps.location.question;
+    questionHelp.textContent = 'Wähle den Ort, an dem du die Tiere am häufigsten bemerkst.';
+    renderOptions(config.steps.location.options, 'location');
+    backButton.hidden = true;
+  }
+
+  function renderStep2() {
+    state.step = 2;
+    setProgress(2);
+    renderSummary();
+    questionCount.textContent = 'Frage 2 von 3';
+    questionTitle.textContent = config.steps.appearance.question;
+    questionHelp.textContent = 'Eine grobe Einschätzung reicht vollkommen.';
+    renderOptions(config.steps.appearance.options, 'appearance');
+    backButton.hidden = false;
+  }
+
+  function renderStep3() {
+    state.step = 3;
+    setProgress(3);
+    renderSummary();
+    const followup = config.followups[state.location];
+    questionCount.textContent = 'Frage 3 von 3';
+    questionTitle.textContent = followup.question;
+    questionHelp.textContent = 'Die letzte Antwort entscheidet, welche Lösung wir dir zuerst zeigen.';
+    renderOptions(followup.options, 'followup');
+    backButton.hidden = false;
+  }
+
+  function productButton(slot, featured = false) {
+    const defaultLabel = featured ? 'Passende Lösung ansehen' : 'Günstige Option ansehen';
+    const label = escapeHtml(featured ? defaultLabel : (slot.cta_label || defaultLabel));
+    if (slot.affiliate_url) {
+      return `<a class="product-cta${featured ? ' is-featured' : ''}" data-track-product="true" data-product-slug="${escapeHtml(slot.product_type || '')}" href="${escapeHtml(slot.affiliate_url)}" target="_blank" rel="sponsored nofollow">${label} →</a>`;
+    }
+    return `<button class="product-cta product-placeholder${featured ? ' is-featured' : ''}" data-track-product="true" data-product-slug="${escapeHtml(slot.product_type || '')}" type="button" data-product="${escapeHtml(slot.product_type)}">${label} →</button>`;
+  }
+
+  function benefitList(slot) {
+    const benefits = Array.isArray(slot.benefits) ? slot.benefits.slice(0, 3) : [];
+    if (!benefits.length) return '';
+    return `<ul class="product-benefits">${benefits.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+  }
+
+  function renderRecommended(slot) {
+    return `
+      <article class="result-product-card is-recommended">
+        <div class="recommended-ribbon">★ Beste Lösung für deine Antworten</div>
+        <div class="recommended-product-main">
+          <div class="product-visual" aria-label="Platzhalter für späteres Produktbild">
+            <span class="product-visual-icon" aria-hidden="true">▧</span>
+            <small>Produktbild</small>
+          </div>
+          <div class="recommended-product-copy">
+            <div class="product-card-label">${escapeHtml(slot.label || 'Empfohlene Lösung')}</div>
+            <h4>${escapeHtml(slot.product_type)}</h4>
+            <p>${escapeHtml(slot.reason || '')}</p>
+          </div>
+        </div>
+        ${benefitList(slot)}
+        ${productButton(slot, true)}
+      </article>
+    `;
+  }
+
+  function renderAlternative(slot) {
+    if (!slot) return '';
+    return `
+      <article class="result-product-card is-simple">
+        <div class="solution-path-badge">Einfach · günstig</div>
+        <div class="alternative-main">
+          <div class="mini-product-visual" aria-hidden="true">▧</div>
+          <div>
+            <div class="product-card-label">${escapeHtml(slot.label || 'Einfache Lösung')}</div>
+            <h4>${escapeHtml(slot.product_type)}</h4>
+          </div>
+        </div>
+        <p>${escapeHtml(slot.reason || '')}</p>
+        ${productButton(slot, false)}
+      </article>
+    `;
+  }
+
+  function renderFree(result, zeroSlot, freeTitle, freeReason) {
+    return `
+      <article class="result-product-card is-free">
+        <div class="solution-path-badge is-free-badge">0 € · ohne Produkt</div>
+        <div class="alternative-main">
+          <div class="mini-product-visual is-free-visual" aria-hidden="true">0€</div>
+          <div>
+            <div class="product-card-label">Kostenlose Lösung</div>
+            <h4>${escapeHtml(freeTitle)}</h4>
+          </div>
+        </div>
+        <p>${escapeHtml(freeReason)}</p>
+        <a class="free-cta" data-free-solution="true" href="/problem/${escapeHtml(result.slug)}/#schritte">Kostenlose Anleitung →</a>
+      </article>
+    `;
+  }
+
+  function showResult(option) {
+    const id = option.result || option.appearanceResults?.[state.appearance] || option.fallback || 'FL001';
+    const result = results[id] || results.FL001;
+    const confidence = option.result ? 'Sehr wahrscheinlich' : 'Am ehesten passt';
+    const paidProducts = (result.product_slots || []).filter((slot) => slot.role !== 'zero');
+    const recommended = paidProducts.find((slot) => slot.role === result.recommended_product_role)
+      || paidProducts.find((slot) => slot.role === 'best')
+      || paidProducts.find((slot) => slot.role === 'better')
+      || paidProducts[paidProducts.length - 1]
+      || null;
+    const alternative = paidProducts.find((slot) => slot !== recommended && slot.role === 'cheap')
+      || paidProducts.find((slot) => slot !== recommended)
+      || null;
+    const zeroSlot = (result.product_slots || []).find((slot) => slot.role === 'zero');
+    const freeTitle = result.free_solution?.title || zeroSlot?.product_type || 'Kostenlose Sofortmaßnahme';
+    const freeReason = result.free_solution?.reason || zeroSlot?.reason || result.immediate_solution;
+
+    track('solution_reached', {
+      problemSlug: result.slug || null,
+      solutionPathId: result.problem_id || id,
+      meta: {
+        result_id: result.problem_id || id,
+        problem: result.problem || null,
+        location: state.location,
+        appearance: state.appearance
+      }
+    });
+
+    setProgress(4);
+    renderSummary();
+    questionPanel.hidden = true;
+    resultWrap.hidden = false;
+    diagnosisApp?.classList.add('is-result');
+    document.querySelector('.direct-solutions')?.classList.add('is-deemphasized');
+
+    resultWrap.innerHTML = `
+      <div class="result-kicker"><span>✓</span>${confidence}</div>
+      <h2>${escapeHtml(result.problem)}</h2>
+      ${result.likely_cause ? `<p class="result-reason"><strong>Wahrscheinlich:</strong> ${escapeHtml(result.likely_cause)}</p>` : ''}
+
+      <div class="result-action-box">
+        <span>Mach das jetzt zuerst</span>
+        <strong>${escapeHtml(result.immediate_solution)}</strong>
+      </div>
+
+      <section class="result-commerce" aria-label="Passende Lösungen">
+        <div class="commerce-heading">
+          <div>
+            <span class="commerce-kicker">Wähle deinen Weg</span>
+            <h3>Wie willst du das Problem lösen?</h3>
+          </div>
+        </div>
+
+        ${recommended ? renderRecommended(recommended) : ''}
+
+        <div class="result-alternatives">
+          ${renderAlternative(alternative)}
+          ${renderFree(result, zeroSlot, freeTitle, freeReason)}
+        </div>
+      </section>
+
+      <section class="result-quick-guide">
+        <div class="quick-guide-heading">
+          <span>Deine ersten Schritte</span>
+          <a href="/problem/${escapeHtml(result.slug)}/">Alle Details →</a>
+        </div>
+        <div class="result-steps">
+          ${result.quick_steps.map((step, index) => `<div><b>${index + 1}</b><span>${escapeHtml(step)}</span></div>`).join('')}
+        </div>
+      </section>
+
+      <div class="result-footer-actions">
+        <a class="detail-link" href="/problem/${escapeHtml(result.slug)}/">Mehr Details, FAQ & Vorbeugung →</a>
+        <button class="secondary-button" id="restart-diagnosis" type="button">Neu bestimmen</button>
+      </div>
+      <div class="result-feedback" aria-label="Feedback">
+        <strong>Hat dir diese Eingrenzung geholfen?</strong>
+        <div>
+          <button type="button" data-feedback="yes">👍 Ja</button>
+          <button type="button" data-feedback="no">👎 Nein</button>
+        </div>
+      </div>
+      <p class="result-disclaimer">Die Diagnose ist eine praktische Eingrenzung, keine biologische Artbestimmung.</p>
+      <div class="affiliate-toast" id="affiliate-toast" hidden>Affiliate-Link wird später hier hinterlegt.</div>
+    `;
+
+    document.querySelector('#restart-diagnosis')?.addEventListener('click', () => {
+      finderStartedTracked = false;
+      renderStep1();
+    });
+
+    resultWrap.querySelector('[data-free-solution]')?.addEventListener('click', () => {
+      track('free_solution_clicked', {
+        problemSlug: result.slug || null,
+        solutionPathId: result.problem_id || id
+      });
+    });
+
+    resultWrap.querySelectorAll('[data-track-product="true"]').forEach((button) => {
+      button.addEventListener('click', () => {
+        track('product_solution_clicked', {
+          problemSlug: result.slug || null,
+          solutionPathId: result.problem_id || id,
+          productTypeSlug: button.dataset.productSlug || null
+        });
+      });
+    });
+
+    resultWrap.querySelectorAll('[data-feedback]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const positive = button.dataset.feedback === 'yes';
+        track(positive ? 'feedback_yes' : 'feedback_no', {
+          problemSlug: result.slug || null,
+          solutionPathId: result.problem_id || id
+        });
+        resultWrap.querySelectorAll('[data-feedback]').forEach((node) => { node.disabled = true; });
+        button.textContent = positive ? '✓ Danke' : '✓ Danke';
+      });
+    });
+
+    document.querySelectorAll('.product-placeholder').forEach((button) => {
+      button.addEventListener('click', () => {
+        const toast = document.querySelector('#affiliate-toast');
+        if (!toast) return;
+        toast.textContent = `„${button.dataset.product}“: Affiliate-Link wird später hier hinterlegt.`;
+        toast.hidden = false;
+        window.clearTimeout(window.__pgAffiliateToastTimer);
+        window.__pgAffiliateToastTimer = window.setTimeout(() => { toast.hidden = true; }, 2600);
+      });
+    });
+
+    window.setTimeout(() => {
+      diagnosisApp?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+  }
+
+  optionsWrap?.addEventListener('click', (event) => {
+    const button = event.target.closest('.diagnosis-option');
+    if (!button) return;
+
+    if (!finderStartedTracked) {
+      finderStartedTracked = true;
+      track('finder_started', { meta: { finder: 'homepage_fly_diagnosis' } });
+    }
+
+    if (state.step === 1) {
+      state.location = button.dataset.location;
+      const option = getOption(config.steps.location, state.location);
+      track('answer_selected', {
+        meta: { question_id: 'location', question_number: 1, option_id: state.location, option_label: option?.label || null }
+      });
+      renderStep2();
+      return;
+    }
+    if (state.step === 2) {
+      state.appearance = button.dataset.appearance;
+      const option = getOption(config.steps.appearance, state.appearance);
+      track('answer_selected', {
+        meta: { question_id: 'appearance', question_number: 2, option_id: state.appearance, option_label: option?.label || null }
+      });
+      renderStep3();
+      return;
+    }
+    if (state.step === 3) {
+      const followup = config.followups[state.location];
+      const option = getOption(followup, button.dataset.followup);
+      if (option) {
+        track('answer_selected', {
+          meta: { question_id: `followup_${state.location}`, question_number: 3, option_id: option.id, option_label: option.label || null }
+        });
+        showResult(option);
+      }
+    }
+  });
+
+  backButton?.addEventListener('click', () => {
+    if (state.step === 3) renderStep2();
+    else if (state.step === 2) renderStep1();
+  });
+</script>

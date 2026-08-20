@@ -1,0 +1,19 @@
+---
+const { items = [] } = Astro.props;
+---
+{items.length > 0 && (
+  <section class="content-section">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">↻</span>
+      <h2>Damit es nicht wiederkommt</h2>
+    </div>
+    <div class="prevention-grid">
+      {items.map((item) => (
+        <div class="prevention-item">
+          <span class="check" aria-hidden="true">✓</span>
+          <span>{item}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+)}

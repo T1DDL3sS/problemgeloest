@@ -1,0 +1,343 @@
+---
+const { problem } = Astro.props;
+const clientData = {
+  diagnosticFlow: problem.diagnostic_flow ?? {},
+  solutionPaths: problem.solution_paths ?? [],
+  productSlots: problem.product_slots ?? [],
+  clusterSlug: problem.cluster?.slug ?? null,
+  problemSlug: problem.slug ?? null
+};
+---
+<section class="diagnosis-app database-diagnosis" id="problem-diagnosis" aria-labelledby="db-diagnosis-title">
+  <div class="diagnosis-topline">
+    <span class="live-dot" aria-hidden="true"></span>
+    <span>Kurze Eingrenzung</span>
+  </div>
+
+  <div class="diagnosis-heading">
+    <h2 id="db-diagnosis-title">Welche Situation passt bei dir?</h2>
+    <p>Beantworte kurz die Fragen. Danach zeigen wir dir sofort den passendsten Lösungsweg.</p>
+  </div>
+
+  <div class="diagnosis-card">
+    <div class="question-panel" id="db-question-panel">
+      <div class="question-count" id="db-question-count">Frage 1</div>
+      <h2 id="db-question-title"></h2>
+      <p class="question-help">Wähle einfach die Antwort, die am ehesten passt.</p>
+      <div class="diagnosis-options" id="db-diagnosis-options"></div>
+      <button class="back-button" id="db-back-button" type="button" hidden>← Zurück</button>
+    </div>
+
+    <div class="diagnosis-result" id="db-diagnosis-result" hidden aria-live="polite"></div>
+  </div>
+</section>
+
+<script type="application/json" id="db-problem-data" set:html={JSON.stringify(clientData)}></script>
+<script>
+  const raw = document.querySelector('#db-problem-data');
+  const data = raw ? JSON.parse(raw.textContent || '{}') : {};
+  const flow = data.diagnosticFlow || {};
+  const paths = Array.isArray(data.solutionPaths) ? data.solutionPaths : [];
+  const slots = Array.isArray(data.productSlots) ? data.productSlots : [];
+  const clusterSlug = data.clusterSlug || null;
+  const problemSlug = data.problemSlug || null;
+
+  const panel = document.querySelector('#db-question-panel');
+  const resultWrap = document.querySelector('#db-diagnosis-result');
+  const title = document.querySelector('#db-question-title');
+  const count = document.querySelector('#db-question-count');
+  const optionsWrap = document.querySelector('#db-diagnosis-options');
+  const backButton = document.querySelector('#db-back-button');
+  const diagnosisApp = document.querySelector('#problem-diagnosis');
+
+  const history = [];
+  let finderStartedTracked = false;
+
+  const track = (eventName, details = {}) => {
+    window.problemGeloestAnalytics?.track?.(eventName, {
+      clusterSlug,
+      problemSlug,
+      ...details
+    });
+  };
+
+  const escapeHtml = (value = '') => String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+  function getQuestion(id) {
+    return (flow.questions || []).find((question) => question.id === id);
+  }
+
+  function getPath(id) {
+    return paths.find((path) => path.id === id);
+  }
+
+  function getSlot(pathId) {
+    const pathSlots = slots.filter((slot) => slot.solution_path_id === pathId);
+    return pathSlots.find((slot) => slot.slot === 'recommended')
+      || pathSlots.find((slot) => slot.slot === 'cheap')
+      || pathSlots.find((slot) => slot.slot === 'premium')
+      || pathSlots[0]
+      || null;
+  }
+
+  function productButton(slot) {
+    if (!slot) return '';
+    const productName = slot.product_type?.name || 'Passende Produktlösung';
+    const productSlug = slot.product_type?.slug || '';
+    const cta = slot.cta || 'Passende Lösung ansehen';
+    if (slot.offer?.affiliate_url) {
+      return `<a class="product-cta is-featured" data-track-product="true" data-product-slug="${escapeHtml(productSlug)}" href="${escapeHtml(slot.offer.affiliate_url)}" target="_blank" rel="sponsored nofollow">${escapeHtml(cta)} →</a>`;
+    }
+    return `<button class="product-cta is-featured product-placeholder" data-track-product="true" data-product-slug="${escapeHtml(productSlug)}" type="button" data-product="${escapeHtml(productName)}">${escapeHtml(cta)} →</button>`;
+  }
+
+  function renderQuestion(questionId, pushHistory = true) {
+    const question = getQuestion(questionId);
+    if (!question) return;
+
+    if (pushHistory && history.at(-1) !== questionId) history.push(questionId);
+
+    diagnosisApp?.classList.remove('is-result');
+    panel.hidden = false;
+    resultWrap.hidden = true;
+    count.textContent = `Frage ${history.length}`;
+    title.textContent = question.question;
+    backButton.hidden = history.length <= 1;
+
+    optionsWrap.innerHTML = (question.options || []).map((option) => `
+      <button class="diagnosis-option" type="button" data-option-id="${escapeHtml(option.id)}">
+        <span class="option-icon" aria-hidden="true">→</span>
+        <span class="option-copy"><strong>${escapeHtml(option.label)}</strong></span>
+        <span class="option-arrow" aria-hidden="true">→</span>
+      </button>
+    `).join('');
+
+    optionsWrap.querySelectorAll('.diagnosis-option').forEach((button) => {
+      button.addEventListener('click', () => {
+        const option = question.options.find((candidate) => candidate.id === button.dataset.optionId);
+        if (!option) return;
+
+        if (!finderStartedTracked) {
+          finderStartedTracked = true;
+          track('finder_started', {
+            meta: { start_question_id: flow.start_question_id || null }
+          });
+        }
+
+        track('answer_selected', {
+          meta: {
+            question_id: question.id,
+            question_number: history.length,
+            option_id: option.id,
+            option_label: option.label
+          }
+        });
+
+        if (option.next_question_id) renderQuestion(option.next_question_id);
+        else if (option.result_path_id) renderResult(option.result_path_id);
+      });
+    });
+  }
+
+  function renderResult(pathId) {
+    const path = getPath(pathId);
+    if (!path) return;
+    const slot = getSlot(pathId);
+    const productName = slot?.offer?.product_name || slot?.product_type?.name || 'Passende Produktlösung';
+    const productReason = path.recommended_solution || slot?.product_type?.description || '';
+    const warnings = Array.isArray(path.warnings) ? path.warnings : [];
+
+    track('solution_reached', {
+      solutionPathId: pathId,
+      meta: {
+        title: path.title || null,
+        has_product_solution: Boolean(slot)
+      }
+    });
+
+    panel.hidden = true;
+    resultWrap.hidden = false;
+    diagnosisApp?.classList.add('is-result');
+
+    resultWrap.innerHTML = `
+      <div class="result-kicker"><span>✓</span>Passender Lösungsweg</div>
+      <h2>${escapeHtml(path.title)}</h2>
+      <p class="result-reason">${escapeHtml(path.assessment || '')}</p>
+
+      <div class="result-action-box">
+        <span>Mach das jetzt zuerst</span>
+        <strong>${escapeHtml(path.immediate_action || '')}</strong>
+      </div>
+
+      <section class="result-commerce" aria-label="Passende Lösungen">
+        <div class="commerce-heading">
+          <div>
+            <span class="commerce-kicker">Empfehlung</span>
+            <h3>So löst du das Problem</h3>
+          </div>
+        </div>
+
+        ${slot ? `
+          <article class="result-product-card is-recommended">
+            <div class="recommended-ribbon">★ Passende Produktlösung</div>
+            <div class="recommended-product-main">
+              <div class="product-visual" aria-label="Platzhalter für späteres Produktbild">
+                <span class="product-visual-icon" aria-hidden="true">▧</span>
+                <small>Produktbild</small>
+              </div>
+              <div class="recommended-product-copy">
+                <div class="product-card-label">${escapeHtml(slot.offer?.provider || 'Produkttyp')}</div>
+                <h4>${escapeHtml(productName)}</h4>
+                <p>${escapeHtml(productReason)}</p>
+              </div>
+            </div>
+            ${productButton(slot)}
+          </article>
+        ` : ''}
+
+        <div class="result-alternatives">
+          <article class="result-product-card is-free">
+            <div class="solution-path-badge is-free-badge">0 € · ohne Produkt</div>
+            <div class="alternative-main">
+              <div class="mini-product-visual is-free-visual" aria-hidden="true">0€</div>
+              <div>
+                <div class="product-card-label">Kostenlose Lösung</div>
+                <h4>Sofort selbst umsetzen</h4>
+              </div>
+            </div>
+            <p>${escapeHtml(path.free_solution || '')}</p>
+            <button class="free-solution-track" type="button" data-free-solution="true">Diese kostenlose Lösung probiere ich</button>
+          </article>
+
+          <article class="result-product-card is-simple">
+            <div class="solution-path-badge">Vorbeugung</div>
+            <div class="alternative-main">
+              <div class="mini-product-visual" aria-hidden="true">↻</div>
+              <div>
+                <div class="product-card-label">Damit es nicht wiederkommt</div>
+                <h4>Ursache dauerhaft reduzieren</h4>
+              </div>
+            </div>
+            <p>${escapeHtml(path.prevention || '')}</p>
+          </article>
+        </div>
+      </section>
+
+      ${warnings.length ? `<div class="database-warning"><strong>Hinweis:</strong> ${warnings.map(escapeHtml).join(' ')}</div>` : ''}
+
+      <div class="result-feedback" aria-label="Feedback zur Lösung">
+        <strong>Hat dir diese Lösung geholfen?</strong>
+        <div class="result-feedback-buttons">
+          <button type="button" data-feedback="yes">👍 Ja</button>
+          <button type="button" data-feedback="no">👎 Nein</button>
+        </div>
+        <span class="result-feedback-thanks" hidden>Danke für dein Feedback.</span>
+      </div>
+
+      <div class="result-footer-actions">
+        <button class="secondary-button" id="db-restart" type="button">Antworten ändern</button>
+      </div>
+      <div class="affiliate-toast" id="db-affiliate-toast" hidden>Affiliate-Link wird später hier hinterlegt.</div>
+    `;
+
+    document.querySelector('#db-restart')?.addEventListener('click', () => {
+      history.length = 0;
+      finderStartedTracked = false;
+      renderQuestion(flow.start_question_id);
+    });
+
+    document.querySelectorAll('#db-diagnosis-result [data-track-product="true"]').forEach((button) => {
+      button.addEventListener('click', () => {
+        track('product_solution_clicked', {
+          solutionPathId: pathId,
+          productTypeSlug: button.dataset.productSlug || null,
+          meta: { product_name: productName }
+        });
+      });
+    });
+
+    document.querySelector('#db-diagnosis-result [data-free-solution="true"]')?.addEventListener('click', () => {
+      track('free_solution_clicked', {
+        solutionPathId: pathId,
+        meta: { title: path.title || null }
+      });
+    });
+
+    document.querySelectorAll('#db-diagnosis-result [data-feedback]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const value = button.dataset.feedback;
+        track(value === 'yes' ? 'feedback_yes' : 'feedback_no', {
+          solutionPathId: pathId
+        });
+
+        document.querySelectorAll('#db-diagnosis-result [data-feedback]').forEach((candidate) => {
+          candidate.disabled = true;
+        });
+        const thanks = document.querySelector('#db-diagnosis-result .result-feedback-thanks');
+        if (thanks) thanks.hidden = false;
+      }, { once: true });
+    });
+
+    document.querySelectorAll('#db-diagnosis-result .product-placeholder').forEach((button) => {
+      button.addEventListener('click', () => {
+        const toast = document.querySelector('#db-affiliate-toast');
+        if (!toast) return;
+        toast.textContent = `„${button.dataset.product}“: Hier wird später automatisch das aktive Affiliate-Angebot eingesetzt.`;
+        toast.hidden = false;
+        window.setTimeout(() => { toast.hidden = true; }, 2800);
+      });
+    });
+  }
+
+  backButton?.addEventListener('click', () => {
+    if (history.length <= 1) return;
+    history.pop();
+    renderQuestion(history.at(-1), false);
+  });
+
+  if (flow.start_question_id) renderQuestion(flow.start_question_id);
+</script>
+
+<style is:global>
+  .database-diagnosis { margin-bottom: 28px; }
+  .database-diagnosis .diagnosis-heading h2 { font-size: clamp(1.7rem, 6vw, 2.5rem); margin-bottom: 10px; }
+  .database-warning { margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: var(--warning); color: var(--ink); }
+
+  .free-solution-track {
+    width: 100%;
+    margin-top: 14px;
+    min-height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: white;
+    color: var(--brand);
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .result-feedback {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface-soft);
+  }
+  .result-feedback > strong { display: block; margin-bottom: 10px; }
+  .result-feedback-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+  .result-feedback-buttons button {
+    min-height: 42px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    color: var(--ink);
+    font-weight: 750;
+    cursor: pointer;
+  }
+  .result-feedback-buttons button:disabled { opacity: .55; cursor: default; }
+  .result-feedback-thanks { display: block; margin-top: 9px; color: var(--ink-soft); font-size: .9rem; }
+</style>

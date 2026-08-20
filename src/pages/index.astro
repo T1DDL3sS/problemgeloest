@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FlyDiagnosis from '../components/FlyDiagnosis.astro';
+import { getPublishedProblemPages } from '../lib/supabase-rest';
+
+const publishedProblems = await getPublishedProblemPages();
+const flyProblems = publishedProblems.filter((problem) => problem.cluster?.slug === 'fliegen');
+const featuredOrder = [
+  'fliegen-in-der-kueche',
+  'fruchtfliegen-loswerden',
+  'abflussfliegen-erkennen-und-bekaempfen',
+  'fliegen-im-winter-in-der-wohnung'
+];
+const featured = featuredOrder
+  .map((slug) => flyProblems.find((problem) => problem.slug === slug))
+  .filter(Boolean);
+---
+<BaseLayout
+  title="ProblemGelöst – Problem erkennen, passende Lösung finden"
+  description="Beantworte wenige Fragen und finde schnell die passende Lösung für dein konkretes Alltagsproblem."
+>
+  <FlyDiagnosis />
+
+  <div class="cluster-jump">
+    <div>
+      <span class="eyebrow">Alle Fliegen-Probleme</span>
+      <strong>Du weißt ungefähr, wonach du suchst?</strong>
+    </div>
+    <a href="/fliegen/">Alle Fliegen-Lösungen ansehen →</a>
+  </div>
+
+  <section class="direct-solutions" aria-labelledby="direct-title">
+    <div class="section-title-row">
+      <div>
+        <div class="eyebrow">Du weißt schon, was los ist?</div>
+        <h2 id="direct-title">Direkt zur Lösung</h2>
+      </div>
+      <span class="muted-label">{flyProblems.length} Datenbank-Problemlösungen verfügbar</span>
+    </div>
+
+    <div class="direct-grid">
+      {featured.map((problem) => {
+        const firstPath = Array.isArray(problem.solution_paths) ? problem.solution_paths[0] : null;
+        const preview = problem.user_question || firstPath?.immediate_action || problem.meta_description || '';
+        return (
+          <a class="direct-card" href={`/${problem.cluster.slug}/${problem.slug}/`}>
+            <span class="direct-tag">{problem.cluster.name}</span>
+            <h3>{problem.name}</h3>
+            <p>{preview}</p>
+            <strong>Lösung öffnen <span>→</span></strong>
+          </a>
+        );
+      })}
+    </div>
+
+    <div class="all-problems-row">
+      <a href="/fliegen/">Alle {flyProblems.length} veröffentlichten Fliegen-Probleme →</a>
+    </div>
+  </section>
+
+  <section class="system-explainer">
+    <div class="eyebrow">So funktioniert ProblemGelöst</div>
+    <h2>Nicht suchen. Eingrenzen. Lösen.</h2>
+    <div class="system-steps">
+      <div><span>1</span><strong>Problem zeigen</strong><p>Du beantwortest wenige einfache Fragen.</p></div>
+      <div><span>2</span><strong>Ursache eingrenzen</strong><p>Wir führen dich zur wahrscheinlich passenden Problemlösung.</p></div>
+      <div><span>3</span><strong>Handeln</strong><p>Du bekommst sofort Schritte und passende Lösungswege.</p></div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cluster-jump {
+    max-width: 980px;
+    margin: 22px auto 0;
+    background: #edf8f1;
+    border: 1px solid #cae8d5;
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .cluster-jump > div { display: grid; gap: 3px; }
+  .cluster-jump strong { font-size: .95rem; }
+  .cluster-jump > a,
+  .all-problems-row a {
+    color: var(--brand);
+    font-weight: 850;
+    text-decoration: none;
+  }
+  .cluster-jump > a:hover,
+  .all-problems-row a:hover { text-decoration: underline; }
+  .all-problems-row { margin-top: 16px; text-align: right; }
+  @media (max-width: 720px) {
+    .cluster-jump { align-items: stretch; flex-direction: column; }
+    .cluster-jump > a {
+      background: var(--brand);
+      color: white;
+      border-radius: 11px;
+      padding: 11px 13px;
+      text-align: center;
+    }
+    .all-problems-row { text-align: left; }
+  }
+</style>

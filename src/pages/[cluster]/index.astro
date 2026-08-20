@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedProblemPages } from '../../lib/supabase-rest';
+
+export async function getStaticPaths() {
+  const pages = await getPublishedProblemPages();
+  const grouped = new Map();
+
+  for (const problem of pages) {
+    if (!problem.cluster?.slug) continue;
+    const key = problem.cluster.slug;
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key).push(problem);
+  }
+
+  return Array.from(grouped.entries()).map(([clusterSlug, problems]) => ({
+    params: { cluster: clusterSlug },
+    props: {
+      cluster: problems[0].cluster,
+      problems: problems.sort((a, b) => a.name.localeCompare(b.name, 'de'))
+    }
+  }));
+}
+
+const { cluster, problems } = Astro.props;
+const clusterTitle = `${cluster.name}: Problem finden und passende Lösung wählen`;
+const clusterDescription = cluster.description || `Konkrete ${cluster.name}-Probleme eingrenzen und die passende Lösung finden.`;
+---
+<BaseLayout title={clusterTitle} description={clusterDescription}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Start</a><span>›</span>
+    <span>{cluster.name}</span>
+  </nav>
+
+  <section class="cluster-hero">
+    <div class="eyebrow">ProblemGelöst · {cluster.name}</div>
+    <h1>Was genau ist dein Problem mit {cluster.name}?</h1>
+    <p>{clusterDescription}</p>
+    <div class="cluster-stat"><strong>{problems.length}</strong><span>geprüfte Problemlösungen aktuell verfügbar</span></div>
+  </section>
+
+  <section class="cluster-directory" aria-labelledby="cluster-problems-title">
+    <div class="section-title-row">
+      <div>
+        <div class="eyebrow">Direkt einsteigen</div>
+        <h2 id="cluster-problems-title">Wähle das Problem, das am ehesten passt</h2>
+      </div>
+      <span class="muted-label">Alle Inhalte kommen aus der zentralen Datenbank</span>
+    </div>
+
+    <div class="cluster-problem-grid">
+      {problems.map((problem) => {
+        const firstPath = Array.isArray(problem.solution_paths) ? problem.solution_paths[0] : null;
+        const preview = problem.user_question || firstPath?.assessment || problem.meta_description || '';
+        return (
+          <a class="cluster-problem-card" href={`/${cluster.slug}/${problem.slug}/`}>
+            <span class="cluster-card-label">{cluster.name}</span>
+            <h3>{problem.name}</h3>
+            <p>{preview}</p>
+            <strong>Problem lösen <span>→</span></strong>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="cluster-help">
+    <div>
+      <div class="eyebrow">Nicht sicher?</div>
+      <h2>Du musst die genaue Fliegenart nicht kennen.</h2>
+      <p>Öffne die Problemlösung, die deiner Situation am nächsten kommt. Dort führen dich wenige Diagnosefragen zum passenden Lösungspfad.</p>
+    </div>
+    <a href="/">Zur schnellen Fliegen-Diagnose →</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .cluster-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: clamp(28px, 5vw, 56px);
+    box-shadow: var(--shadow);
+    margin-bottom: 38px;
+  }
+  .cluster-hero h1 {
+    font-size: clamp(2.35rem, 7vw, 4.6rem);
+    margin: 10px 0 18px;
+  }
+  .cluster-hero > p {
+    max-width: 720px;
+    font-size: 1.08rem;
+    margin-bottom: 24px;
+  }
+  .cluster-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    border: 1px solid var(--accent-strong);
+    border-radius: 14px;
+    padding: 10px 14px;
+    color: var(--brand);
+  }
+  .cluster-stat strong { font-size: 1.15rem; }
+  .cluster-stat span { font-size: .84rem; font-weight: 750; }
+  .cluster-directory { margin-bottom: 30px; }
+  .cluster-problem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .cluster-problem-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .cluster-problem-card:hover {
+    transform: translateY(-2px);
+    border-color: #b8d5c4;
+    box-shadow: 0 12px 30px rgba(25, 57, 41, .08);
+  }
+  .cluster-card-label {
+    color: var(--brand-2);
+    font-size: .72rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+  }
+  .cluster-problem-card h3 { font-size: 1.15rem; margin-bottom: 9px; }
+  .cluster-problem-card p { font-size: .9rem; margin-bottom: 20px; }
+  .cluster-problem-card strong { margin-top: auto; color: var(--brand); font-size: .9rem; }
+  .cluster-help {
+    background: var(--brand);
+    border-radius: 24px;
+    padding: clamp(24px, 4vw, 38px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .cluster-help .eyebrow { color: #bde9cf; }
+  .cluster-help h2 { color: white; margin: 7px 0 8px; }
+  .cluster-help p { color: #d4e7dc; margin: 0; max-width: 680px; }
+  .cluster-help > a {
+    flex: 0 0 auto;
+    background: white;
+    color: var(--brand);
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 850;
+  }
+  @media (max-width: 720px) {
+    .cluster-problem-grid { grid-template-columns: 1fr; }
+    .cluster-problem-card { min-height: 0; }
+    .cluster-help { align-items: stretch; flex-direction: column; }
+    .cluster-help > a { text-align: center; }
+    .section-title-row { align-items: flex-start; flex-direction: column; gap: 8px; }
+  }
+</style>

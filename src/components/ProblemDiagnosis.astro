@@ -1,0 +1,21 @@
+---
+const { symptoms = [], causes = [] } = Astro.props;
+---
+<section class="content-section">
+  <div class="section-heading">
+    <span class="section-icon" aria-hidden="true">?</span>
+    <h2>Warum passiert das?</h2>
+  </div>
+  <div class="diagnosis-grid">
+    {symptoms.length > 0 && (
+      <div class="mini-card">
+        <h3>Daran erkennst du es</h3>
+        <ul class="clean-list">{symptoms.map((item) => <li>{item}</li>)}</ul>
+      </div>
+    )}
+    <div class="mini-card">
+      <h3>Häufige Ursachen</h3>
+      <ul class="clean-list">{causes.map((cause) => <li>{cause}</li>)}</ul>
+    </div>
+  </div>
+</section>

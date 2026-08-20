@@ -1,0 +1,79 @@
+{
+  "title": "Welche Fliegen hast du?",
+  "subtitle": "Beantworte 3 kurze Fragen. Wir grenzen das Problem ein und schicken dich direkt zur passenden Lösung.",
+  "steps": {
+    "location": {
+      "question": "Wo siehst du die Fliegen hauptsächlich?",
+      "options": [
+        { "id": "plants", "icon": "🪴", "label": "Bei Pflanzen", "hint": "Blumenerde, Topf oder Blätter" },
+        { "id": "kitchen", "icon": "🍎", "label": "Küche / Obst", "hint": "Obst, Getränke oder Arbeitsfläche" },
+        { "id": "trash", "icon": "🗑️", "label": "Beim Müll", "hint": "Bio- oder Restmüll" },
+        { "id": "window", "icon": "🪟", "label": "Am Fenster", "hint": "Fensterbank oder Fliegengitter" },
+        { "id": "bathroom", "icon": "🚿", "label": "Bad / Abfluss", "hint": "Waschbecken, Dusche oder Ablauf" },
+        { "id": "everywhere", "icon": "🏠", "label": "Überall / unklar", "hint": "Kein eindeutiger Ort" }
+      ]
+    },
+    "appearance": {
+      "question": "Wie sehen sie ungefähr aus?",
+      "options": [
+        { "id": "tiny-dark", "icon": "•", "label": "Sehr klein & dunkel", "hint": "Nur wenige Millimeter" },
+        { "id": "tiny-brown", "icon": "●", "label": "Sehr klein & braun", "hint": "Winzig, oft in Küche" },
+        { "id": "normal", "icon": "🪰", "label": "Wie normale Fliegen", "hint": "Typische Stubenfliegen-Größe" },
+        { "id": "large", "icon": "◉", "label": "Groß / auffällig", "hint": "Groß, dunkel oder metallisch" },
+        { "id": "unknown", "icon": "?", "label": "Weiß ich nicht", "hint": "Kein Problem" }
+      ]
+    }
+  },
+  "followups": {
+    "plants": {
+      "question": "Was beobachtest du bei den Pflanzen?",
+      "options": [
+        { "id": "soil", "icon": "🌱", "label": "Sie kommen aus der Erde", "hint": "Beim Gießen fliegen sie auf", "result": "FL028" },
+        { "id": "leaves", "icon": "🍃", "label": "Sie sitzen eher an den Blättern", "hint": "Nicht eindeutig aus der Erde", "fallback": "FL001", "appearanceResults": { "tiny-dark": "FL028" } },
+        { "id": "plant-unknown", "icon": "?", "label": "Kann ich nicht sagen", "hint": "Wir nehmen den wahrscheinlichsten Treffer", "fallback": "FL001", "appearanceResults": { "tiny-dark": "FL028", "tiny-brown": "FL028" } }
+      ]
+    },
+    "kitchen": {
+      "question": "Wo sammeln sie sich in der Küche?",
+      "options": [
+        { "id": "fruit", "icon": "🍌", "label": "Bei Obst / Getränken", "hint": "Obstschale, Saft, Bier, Wein", "result": "FL035" },
+        { "id": "bio", "icon": "🗑️", "label": "Beim Biomüll", "hint": "Direkt am oder im Behälter", "result": "FL020" },
+        { "id": "drain", "icon": "🚰", "label": "Bei Spüle / Abfluss", "hint": "Tiere sitzen am Ablauf", "result": "FL022" },
+        { "id": "kitchen-unknown", "icon": "?", "label": "Keine Ahnung", "hint": "Wir grenzen über die Größe ein", "fallback": "FL001", "appearanceResults": { "tiny-dark": "FL035", "tiny-brown": "FL035" } }
+      ]
+    },
+    "trash": {
+      "question": "Was passt am ehesten?",
+      "options": [
+        { "id": "inside-bin", "icon": "🗑️", "label": "Sie sitzen direkt am / im Biomüll", "hint": "Beim Öffnen werden mehrere sichtbar", "result": "FL020" },
+        { "id": "around-trash", "icon": "↗", "label": "Sie sind rund um den Müll verteilt", "hint": "Quelle nicht ganz eindeutig", "result": "FL020" },
+        { "id": "trash-unknown", "icon": "?", "label": "Nicht sicher", "hint": "Wir starten mit der häufigsten Ursache", "result": "FL020" }
+      ]
+    },
+    "window": {
+      "question": "Welche Situation passt bei deinem Fenster?",
+      "options": [
+        { "id": "flyscreen", "icon": "▦", "label": "Trotz Fliegengitter", "hint": "Das Fenster ist geschützt", "result": "FL050" },
+        { "id": "closed", "icon": "🔒", "label": "Trotz geschlossenem Fenster", "hint": "Du verstehst nicht, wo sie herkommen", "result": "FL003" },
+        { "id": "open", "icon": "↗", "label": "Fenster ist öfter offen", "hint": "Zuflug von außen ist möglich", "result": "FL001" },
+        { "id": "window-unknown", "icon": "?", "label": "Nicht sicher", "hint": "Wir suchen zuerst nach der Ursache", "fallback": "FL001", "appearanceResults": { "tiny-dark": "FL003" } }
+      ]
+    },
+    "bathroom": {
+      "question": "Wo genau treten sie im Bad auf?",
+      "options": [
+        { "id": "bath-drain", "icon": "🚰", "label": "Direkt am Abfluss", "hint": "Waschbecken, Dusche oder Bodenablauf", "result": "FL022" },
+        { "id": "bath-plants", "icon": "🪴", "label": "Bei einer Pflanze", "hint": "Pflanze steht im Badezimmer", "result": "FL028" },
+        { "id": "bath-unknown", "icon": "?", "label": "Im Raum verteilt", "hint": "Keine klare Quelle sichtbar", "result": "FL001" }
+      ]
+    },
+    "everywhere": {
+      "question": "Welche Beschreibung passt am besten?",
+      "options": [
+        { "id": "sudden", "icon": "⚡", "label": "Plötzlich sind sehr viele da", "hint": "Innerhalb kurzer Zeit deutlich mehr", "result": "FL001" },
+        { "id": "closed-home", "icon": "🔒", "label": "Obwohl alles geschlossen ist", "hint": "Fenster und Türen sind meist zu", "result": "FL003" },
+        { "id": "everywhere-unknown", "icon": "?", "label": "Einfach überall", "hint": "Keine klare Quelle erkennbar", "result": "FL001" }
+      ]
+    }
+  }
+}

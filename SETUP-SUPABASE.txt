@@ -1,0 +1,21 @@
+ProblemGelöst V4 + Supabase
+
+1. ZIP entpacken.
+2. Terminal im Projektordner öffnen.
+3. npm run dev
+4. Im Browser öffnen:
+   http://localhost:4321/fliegen/fliegen-in-der-kueche/
+
+Falls die mitgelieferten node_modules bei dir nicht funktionieren:
+   npm install
+   npm run dev
+
+Was du auf der neuen Seite testest:
+- H1/SEO/User-Frage kommen aus Supabase.
+- Diagnosefragen kommen aus problems.diagnostic_flow.
+- Das Ergebnis kommt aus problems.solution_paths.
+- Der Produkttyp kommt über problem_product_slots -> product_types.
+- Ein späteres aktives Affiliate-Angebot wird über affiliate_offers eingesetzt, ohne den Problemtext zu ändern.
+
+Hinweis:
+Die bisherige V4-Startseiten-Diagnose nutzt noch die lokalen JSON-Testdaten. Das ist absichtlich so, damit wir sie nicht zerstören, bevor genügend echte DB-Datensätze vorhanden sind.

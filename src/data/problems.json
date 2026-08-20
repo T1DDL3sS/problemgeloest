@@ -1,0 +1,618 @@
+[
+  {
+    "problem_id": "FL001",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Diagnose",
+    "problem": "Plötzlich viele Fliegen in der Wohnung",
+    "slug": "ploetzlich-viele-fliegen-in-der-wohnung",
+    "primary_query": "plötzlich viele fliegen in der wohnung",
+    "secondary_queries": [
+      "auf einmal viele fliegen in der wohnung",
+      "warum habe ich plötzlich so viele fliegen",
+      "wo kommen die ganzen fliegen her"
+    ],
+    "intent": "Ursache finden und Befall schnell stoppen",
+    "symptoms": [
+      "Innerhalb kurzer Zeit treten deutlich mehr Fliegen auf.",
+      "Mehrere Tiere sitzen häufig an Fenstern.",
+      "Es ist keine offensichtliche Eintrittsquelle erkennbar."
+    ],
+    "likely_causes": [
+      "Versteckte Brutquelle in der Wohnung",
+      "Biomüll oder andere organische Reste",
+      "Offene oder verdorbene Lebensmittel",
+      "Zuflug durch Fenster, Türen oder Ritzen"
+    ],
+    "immediate_solution": "Suche zuerst nach einer Brut- oder Nahrungsquelle und entferne vorhandene Fliegen mechanisch.",
+    "solution_steps": [
+      "Biomüll, offene Lebensmittel und Tierfutter kontrollieren.",
+      "Mülleimer, Abflüsse und schwer sichtbare Stellen prüfen.",
+      "Vorhandene Fliegen absaugen oder mit einer Falle entfernen.",
+      "Fenster, Gitter und andere mögliche Eintrittsstellen kontrollieren."
+    ],
+    "product_slots": [
+      {
+        "role": "cheap",
+        "label": "Günstige Lösung",
+        "product_type": "Biozidfreie Fenster-Klebefalle",
+        "reason": "Reduziert vorhandene erwachsene Fliegen ohne Spray.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Fängt bereits vorhandene erwachsene Fliegen",
+          "Ohne Insektenspray einsetzbar",
+          "Hilft die Befallsstärke sichtbar zu machen"
+        ]
+      },
+      {
+        "role": "better",
+        "label": "Bessere Lösung",
+        "product_type": "Fliegengitter oder Reparaturmaterial",
+        "reason": "Hilft, wenn der Zuflug über Fenster oder kleine Beschädigungen erfolgt.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Schließt typische Eintrittsstellen am Fenster",
+          "Wirkt vorbeugend statt nur gegen einzelne Tiere",
+          "Sinnvoll bei wiederkehrendem Zuflug"
+        ]
+      }
+    ],
+    "prevention": [
+      "Abfall regelmäßig entfernen.",
+      "Lebensmittel geschlossen aufbewahren.",
+      "Fenster und Türen gegen Zuflug sichern."
+    ],
+    "faq": [
+      {
+        "question": "Warum sind plötzlich so viele Fliegen da?",
+        "answer": "Häufig gibt es entweder eine neue Eintrittsstelle oder eine versteckte Nahrungs- beziehungsweise Brutquelle. Entscheidend ist deshalb zuerst die Ursache einzugrenzen."
+      },
+      {
+        "question": "Reicht es, nur die Fliegen zu töten?",
+        "answer": "Bei einem wiederkehrenden Befall meist nicht. Bleibt die Ursache bestehen, können weitere Fliegen nachkommen oder sich entwickeln."
+      }
+    ],
+    "related_problem_ids": [
+      "FL002",
+      "FL003",
+      "FL008",
+      "FL020",
+      "FL040"
+    ],
+    "seo_title": "Plötzlich viele Fliegen in der Wohnung: Ursache finden",
+    "meta_description": "Plötzlich viele Fliegen in der Wohnung? Finde mögliche Brutquellen, stoppe den Befall und verhindere, dass die Fliegen wiederkommen.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Brutquelle suchen & Fliegen entfernen",
+      "reason": "Kontrolliere zuerst Biomüll, offene Lebensmittel, Tierfutter und versteckte organische Reste."
+    },
+    "recommended_product_role": "better"
+  },
+  {
+    "problem_id": "FL050",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Prävention",
+    "problem": "Fliegen trotz Fliegengitter",
+    "slug": "fliegen-trotz-fliegengitter",
+    "primary_query": "fliegen trotz fliegengitter",
+    "secondary_queries": [
+      "fliegen kommen trotz fliegengitter rein",
+      "fliegen trotz insektenschutz",
+      "wo kommen fliegen trotz fliegengitter her"
+    ],
+    "intent": "Eintrittsstelle finden",
+    "symptoms": [
+      "Fliegen erscheinen im Raum, obwohl das Fenster mit einem Gitter geschützt ist.",
+      "Am Gitter ist auf den ersten Blick kein großer Schaden erkennbar."
+    ],
+    "likely_causes": [
+      "Spalt zwischen Rahmen und Fliegengitter",
+      "Kleines Loch im Gewebe",
+      "Andere ungeschützte Fenster oder Türen",
+      "Fliegen entstehen bereits innerhalb der Wohnung"
+    ],
+    "immediate_solution": "Prüfe Fliegengitter und Rahmen systematisch auf kleine Löcher und undichte Ränder.",
+    "solution_steps": [
+      "Gitter gegen Licht auf Löcher kontrollieren.",
+      "Alle Ränder und Klebeverbindungen prüfen.",
+      "Fensterrahmen und angrenzende Spalten kontrollieren.",
+      "Bei weiterhin vielen Fliegen nach einer Brutquelle im Raum suchen."
+    ],
+    "product_slots": [
+      {
+        "role": "cheap",
+        "label": "Günstige Lösung",
+        "product_type": "Fliegengitter-Reparaturband",
+        "reason": "Kleine beschädigte Stellen können schnell geschlossen werden.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Kleine Löcher schnell abdichten",
+          "Günstige Reparatur ohne neues Gitter",
+          "Direkt an typischen Schwachstellen einsetzbar"
+        ]
+      },
+      {
+        "role": "better",
+        "label": "Bessere Lösung",
+        "product_type": "Neues selbstklebendes Fliegengitter",
+        "reason": "Sinnvoll, wenn das alte Netz mehrere Schwachstellen hat.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Ersetzt ein beschädigtes oder undichtes Netz",
+          "Deckt die gesamte Fensteröffnung ab",
+          "Einfach nachrüstbar"
+        ]
+      },
+      {
+        "role": "premium",
+        "label": "Premiumlösung",
+        "product_type": "Passgenauer Insektenschutzrahmen",
+        "reason": "Stabilere und langfristigere Lösung für häufig genutzte Fenster.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Stabile langfristige Lösung",
+          "Sauberer Abschluss am Fensterrahmen",
+          "Gut für häufig geöffnete Fenster"
+        ]
+      }
+    ],
+    "prevention": [
+      "Beschädigte Gitter sofort reparieren.",
+      "Rahmen und Dichtungen regelmäßig kontrollieren."
+    ],
+    "faq": [
+      {
+        "question": "Können Fliegen durch sehr kleine Löcher im Gitter kommen?",
+        "answer": "Beschädigte Ränder, schlecht verklebte Stellen und kleine Öffnungen können einen Eintritt ermöglichen. Deshalb sollte nicht nur die Mitte des Netzes geprüft werden."
+      }
+    ],
+    "related_problem_ids": [
+      "FL001"
+    ],
+    "seo_title": "Fliegen trotz Fliegengitter: Wo kommen sie rein?",
+    "meta_description": "Fliegen trotz Fliegengitter? Prüfe Löcher, Rahmen und andere Eintrittsstellen und finde heraus, ob die Fliegen vielleicht aus der Wohnung kommen.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Gitter und Rahmen komplett prüfen",
+      "reason": "Halte das Netz gegen Licht und kontrolliere besonders Ränder, Klebestellen und kleine Spalten."
+    },
+    "recommended_product_role": "better"
+  },
+  {
+    "problem_id": "FL020",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Biomüll",
+    "problem": "Fliegen beim Biomüll",
+    "slug": "fliegen-beim-biomuell",
+    "primary_query": "fliegen biomüll",
+    "secondary_queries": [
+      "fliegen im biomülleimer",
+      "biomüll zieht fliegen an",
+      "fliegen biomüll wohnung"
+    ],
+    "intent": "Brutquelle beseitigen",
+    "symptoms": [
+      "Fliegen sammeln sich rund um den Biomülleimer.",
+      "Nach dem Öffnen des Behälters werden mehrere Tiere sichtbar."
+    ],
+    "likely_causes": [
+      "Feuchte organische Abfälle",
+      "Lebensmittelreste am Rand oder Deckel",
+      "Zu lange Standzeit des Biomülls"
+    ],
+    "immediate_solution": "Biomüll entfernen und das Sammelgefäß gründlich reinigen.",
+    "solution_steps": [
+      "Biomüll nach draußen bringen.",
+      "Behälter mit heißem Wasser reinigen.",
+      "Rand, Deckel und Boden reinigen.",
+      "Behälter vollständig trocknen lassen.",
+      "Künftig häufiger leeren."
+    ],
+    "product_slots": [
+      {
+        "role": "cheap",
+        "label": "Günstige Lösung",
+        "product_type": "Biomülleimer mit dicht schließendem Deckel",
+        "reason": "Verringert den direkten Zugang zu organischen Resten.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Erschwert Fliegen den Zugang zum Biomüll",
+          "Reduziert offene Geruchs- und Nahrungsquellen",
+          "Einfach im Alltag umzusetzen"
+        ]
+      },
+      {
+        "role": "better",
+        "label": "Bessere Lösung",
+        "product_type": "Leicht zu reinigender geschlossener Biomüllbehälter",
+        "reason": "Ein glatter, gut zugänglicher Behälter lässt sich schneller sauber halten.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Geschlossenes System gegen direkten Zuflug",
+          "Leicht sauber zu halten",
+          "Hilft neue Brutquellen zu vermeiden"
+        ]
+      }
+    ],
+    "prevention": [
+      "Biomüll regelmäßig leeren.",
+      "Behälter sauber und möglichst trocken halten.",
+      "Deckel geschlossen halten."
+    ],
+    "faq": [
+      {
+        "question": "Warum kommen Fliegen so schnell zum Biomüll?",
+        "answer": "Organische Abfälle liefern Gerüche, Feuchtigkeit und Nahrung. Bleiben Reste länger stehen, wird der Behälter dadurch besonders attraktiv."
+      }
+    ],
+    "related_problem_ids": [
+      "FL001",
+      "FL035"
+    ],
+    "seo_title": "Fliegen beim Biomüll: So wirst du sie wieder los",
+    "meta_description": "Fliegen im Biomüll? Entferne die Brutquelle, reinige den Behälter richtig und verhindere, dass sich neue Fliegen entwickeln.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Biomüll raus & Behälter reinigen",
+      "reason": "Entferne den Inhalt, wasche Rand, Deckel und Boden gründlich aus und lasse alles trocknen."
+    },
+    "recommended_product_role": "better"
+  },
+  {
+    "problem_id": "FL035",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Fruchtfliegen",
+    "problem": "Fruchtfliegen in der Wohnung",
+    "slug": "fruchtfliegen-in-der-wohnung",
+    "primary_query": "fruchtfliegen in der wohnung",
+    "secondary_queries": [
+      "fruchtfliegen loswerden",
+      "woher kommen fruchtfliegen",
+      "viele fruchtfliegen in der küche"
+    ],
+    "intent": "Fruchtfliegen beseitigen und Brutquelle finden",
+    "symptoms": [
+      "Viele sehr kleine Fliegen befinden sich in Küche oder Essbereich.",
+      "Die Tiere sammeln sich häufig an Obst, Biomüll oder Getränkeresten."
+    ],
+    "likely_causes": [
+      "Reifes oder gärendes Obst",
+      "Biomüll",
+      "Getränkereste",
+      "Andere organische Lebensmittelreste"
+    ],
+    "immediate_solution": "Entferne Nahrungs- und Brutquellen und reduziere vorhandene Tiere mit einer einfachen Falle.",
+    "solution_steps": [
+      "Offenes oder überreifes Obst entfernen.",
+      "Biomüll leeren.",
+      "Getränkeflaschen und klebrige Reste reinigen.",
+      "Mögliche Brutstellen reinigen.",
+      "Fruchtfliegenfalle aufstellen."
+    ],
+    "product_slots": [
+      {
+        "role": "zero",
+        "label": "0-€-Lösung",
+        "product_type": "Essig-Falle selbst herstellen",
+        "reason": "Kann mit üblichen Haushaltsmitteln ausprobiert werden."
+      },
+      {
+        "role": "cheap",
+        "label": "Günstige Lösung",
+        "product_type": "Fruchtfliegenfalle",
+        "reason": "Bequeme fertige Lösung zur Reduktion erwachsener Tiere.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Reduziert erwachsene Fruchtfliegen",
+          "Sofort aufstellbar",
+          "Praktisch bei akutem Befall"
+        ]
+      },
+      {
+        "role": "better",
+        "label": "Bessere Prävention",
+        "product_type": "Lebensmittel-Abdeckhaube oder Aufbewahrungsbehälter",
+        "reason": "Reduziert den Zugang zu attraktiven Lebensmitteln.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Schützt attraktive Lebensmittel",
+          "Reduziert neue Nahrungsquellen",
+          "Hilft einem erneuten Befall vorzubeugen"
+        ]
+      }
+    ],
+    "prevention": [
+      "Obst geeignet lagern.",
+      "Lebensmittel nicht offen stehen lassen.",
+      "Biomüll häufig leeren.",
+      "Getränkereste entfernen."
+    ],
+    "faq": [
+      {
+        "question": "Woher kommen Fruchtfliegen?",
+        "answer": "Sie werden von gärenden oder reifen organischen Stoffen angezogen und können sich dort vermehren. Deshalb ist die Quellensuche wichtiger als nur einzelne Tiere zu entfernen."
+      },
+      {
+        "question": "Hilft eine Falle allein?",
+        "answer": "Eine Falle kann erwachsene Tiere reduzieren. Bleiben Obst, Biomüll oder andere Brutquellen bestehen, löst sie das Grundproblem jedoch nicht."
+      }
+    ],
+    "related_problem_ids": [
+      "FL020",
+      "FL028"
+    ],
+    "seo_title": "Fruchtfliegen in der Wohnung loswerden: Das hilft",
+    "meta_description": "Fruchtfliegen in Küche oder Wohnung? Finde die Brutquelle, entferne sie und bekämpfe die kleinen Fliegen mit einfachen Maßnahmen.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Brutquellen entfernen & Essigfalle bauen",
+      "reason": "Entferne reifes Obst und Biomüll. Eine einfache Essig-Spülmittel-Falle kann erwachsene Tiere reduzieren."
+    },
+    "recommended_product_role": "cheap"
+  },
+  {
+    "problem_id": "FL028",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Zimmerpflanzen",
+    "problem": "Kleine schwarze Fliegen in der Blumenerde",
+    "slug": "kleine-schwarze-fliegen-blumenerde",
+    "primary_query": "kleine schwarze fliegen in blumenerde",
+    "secondary_queries": [
+      "kleine fliegen bei zimmerpflanzen",
+      "schwarze fliegen aus blumenerde",
+      "trauermücken zimmerpflanzen"
+    ],
+    "intent": "Trauermücken erkennen und bekämpfen",
+    "symptoms": [
+      "Kleine dunkle Fliegen bewegen sich direkt an Zimmerpflanzen.",
+      "Beim Gießen oder Bewegen der Pflanze fliegen Tiere aus dem Substrat auf."
+    ],
+    "likely_causes": [
+      "Trauermücken in feuchtem Pflanzensubstrat",
+      "Dauerhaft sehr feuchte Blumenerde"
+    ],
+    "immediate_solution": "Reduziere die Feuchtigkeit der Erde, soweit es die Pflanze verträgt, und fange erwachsene Tiere mit Gelbtafeln ab.",
+    "solution_steps": [
+      "Betroffene Pflanzen identifizieren.",
+      "Substrat zwischen den Wassergaben stärker abtrocknen lassen, sofern die Pflanze das verträgt.",
+      "Gelbtafeln in Innenräumen einsetzen.",
+      "Bei stärkerem Befall eine biologische Larvenbekämpfung erwägen."
+    ],
+    "product_slots": [
+      {
+        "role": "cheap",
+        "label": "Günstige Lösung",
+        "product_type": "Gelbtafeln",
+        "reason": "Fangen erwachsene Trauermücken und helfen zugleich, die Befallsstärke zu beobachten.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Fangen erwachsene Trauermücken",
+          "Zeigen, wie stark der Befall noch ist",
+          "Schnell und unkompliziert aufgestellt"
+        ]
+      },
+      {
+        "role": "best",
+        "label": "Stärkere Lösung",
+        "product_type": "Steinernema-feltiae-Nematoden",
+        "reason": "Biologische Option, die gegen Larven im Substrat eingesetzt wird.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Bekämpfen die Larven direkt im Substrat",
+          "Biologische Lösung ohne Insektenspray",
+          "Besonders sinnvoll bei stärkerem Befall"
+        ]
+      }
+    ],
+    "prevention": [
+      "Staunässe vermeiden.",
+      "Zimmerpflanzen nicht dauerhaft zu feucht halten.",
+      "Neue Pflanzen und Pflanzenerde auf Befall kontrollieren."
+    ],
+    "faq": [
+      {
+        "question": "Sind kleine schwarze Fliegen in Blumenerde immer Trauermücken?",
+        "answer": "Nicht zwangsläufig. Kleine dunkle Fliegen unmittelbar an feuchter Zimmerpflanzenerde sind jedoch ein typischer Hinweis. Bei Unsicherheit sollte die Art zuerst eingegrenzt werden."
+      }
+    ],
+    "related_problem_ids": [
+      "FL035"
+    ],
+    "seo_title": "Kleine schwarze Fliegen in Blumenerde: Was hilft?",
+    "meta_description": "Kleine schwarze Fliegen an Zimmerpflanzen sind oft Trauermücken. So erkennst du sie und bekämpfst erwachsene Tiere und Larven.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Erde trockener halten",
+      "reason": "Lass das Substrat zwischen den Wassergaben stärker abtrocknen, soweit deine Pflanze das verträgt."
+    },
+    "recommended_product_role": "best"
+  },
+  {
+    "problem_id": "FL022",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Abfluss",
+    "problem": "Kleine Fliegen aus dem Abfluss",
+    "slug": "kleine-fliegen-aus-dem-abfluss",
+    "primary_query": "kleine fliegen aus dem abfluss",
+    "secondary_queries": [
+      "fliegen im abfluss",
+      "kleine fliegen im badezimmer abfluss",
+      "abflussfliegen loswerden"
+    ],
+    "intent": "Brutquelle im Abfluss finden und beseitigen",
+    "symptoms": [
+      "Kleine Fliegen sitzen häufig rund um Waschbecken, Dusche oder Abfluss.",
+      "Nach längerer Ruhe sind die Tiere besonders nahe am Ablauf sichtbar."
+    ],
+    "likely_causes": [
+      "Organische Ablagerungen im Abfluss oder Siphon",
+      "Feuchte Biofilme in selten gereinigten Ablaufbereichen"
+    ],
+    "immediate_solution": "Reinige Abfluss, Überlauf und erreichbare Siphonbereiche gründlich und entferne organische Ablagerungen mechanisch.",
+    "solution_steps": [
+      "Prüfe, aus welchem Ablauf die Tiere tatsächlich kommen.",
+      "Entferne Haare, Schlamm und organische Beläge mechanisch.",
+      "Reinige auch Überlauf und schwer erreichbare Randbereiche.",
+      "Beobachte den Ablauf mehrere Tage und wiederhole die Reinigung bei Bedarf."
+    ],
+    "product_slots": [
+      {
+        "role": "cheap",
+        "label": "Einfache Hilfe",
+        "product_type": "Schmale Abfluss- oder Rohrreinigungsbürste",
+        "reason": "Hilft dabei, organische Beläge an erreichbaren Stellen mechanisch zu entfernen.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Entfernt erreichbare organische Beläge mechanisch",
+          "Hilft direkt an möglichen Brutstellen",
+          "Ohne dauerhaftes Zusatzgerät"
+        ]
+      },
+      {
+        "role": "better",
+        "label": "Für schwer erreichbare Stellen",
+        "product_type": "Geeigneter Abflussreiniger für organische Ablagerungen",
+        "reason": "Kann die Reinigung ergänzen, wenn mechanisches Reinigen allein nicht ausreicht.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Ergänzt die mechanische Reinigung",
+          "Erreicht schwer zugängliche Bereiche",
+          "Zielt auf organische Ablagerungen im Abfluss"
+        ]
+      }
+    ],
+    "prevention": [
+      "Abläufe regelmäßig reinigen.",
+      "Haare und organische Reste nicht im Ablauf sammeln lassen.",
+      "Selten genutzte Abläufe kontrollieren und sauber halten."
+    ],
+    "faq": [
+      {
+        "question": "Warum kommen kleine Fliegen aus dem Abfluss?",
+        "answer": "Bestimmte kleine Fliegenarten können sich in feuchten organischen Ablagerungen entwickeln. Deshalb ist das Entfernen der Brutquelle wichtiger als nur erwachsene Tiere zu fangen."
+      },
+      {
+        "question": "Reicht heißes Wasser allein?",
+        "answer": "Bei hartnäckigen Ablagerungen ist eine gründliche mechanische Reinigung meist sinnvoller, weil der Biofilm tatsächlich entfernt werden muss."
+      }
+    ],
+    "related_problem_ids": [
+      "FL001",
+      "FL035"
+    ],
+    "seo_title": "Kleine Fliegen aus dem Abfluss: Ursache und Lösung",
+    "meta_description": "Kleine Fliegen am Abfluss? Finde die Brutquelle, reinige Ablauf und Siphon richtig und verhindere, dass die kleinen Fliegen wiederkommen.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Abfluss mechanisch reinigen",
+      "reason": "Entferne Haare, Schlamm und organische Beläge aus Ablauf, Überlauf und erreichbaren Siphonbereichen."
+    },
+    "recommended_product_role": "cheap"
+  },
+  {
+    "problem_id": "FL003",
+    "category": "Schädlinge",
+    "subcategory": "Fliegen",
+    "cluster": "Diagnose",
+    "problem": "Fliegen trotz geschlossenem Fenster",
+    "slug": "fliegen-trotz-geschlossenem-fenster",
+    "primary_query": "fliegen trotz geschlossenem fenster",
+    "secondary_queries": [
+      "woher kommen fliegen wenn fenster zu sind",
+      "fliegen in wohnung fenster geschlossen",
+      "fliegen trotz geschlossener fenster"
+    ],
+    "intent": "Versteckte Eintritts- oder Brutquelle finden",
+    "symptoms": [
+      "Fliegen erscheinen im Raum, obwohl Fenster und Türen überwiegend geschlossen sind.",
+      "Eine offensichtliche Eintrittsstelle ist nicht zu erkennen."
+    ],
+    "likely_causes": [
+      "Versteckte Brutquelle innerhalb der Wohnung",
+      "Kleine Spalten oder andere Öffnungen",
+      "Fliegen waren bereits im Raum und werden erst später bemerkt"
+    ],
+    "immediate_solution": "Suche zuerst nach einer Quelle in der Wohnung, statt nur das geschlossene Fenster als Eintrittsweg anzunehmen.",
+    "solution_steps": [
+      "Kontrolliere Biomüll, Lebensmittelreste und Tierfutter.",
+      "Prüfe Abflüsse, Pflanzen und schwer sichtbare Bereiche.",
+      "Kontrolliere Fensterrahmen, Lüftungen und kleine Spalten.",
+      "Beobachte, an welchem Ort neue Fliegen zuerst auftreten."
+    ],
+    "product_slots": [
+      {
+        "role": "cheap",
+        "label": "Zum Eingrenzen",
+        "product_type": "Biozidfreie Klebefalle",
+        "reason": "Kann helfen zu erkennen, in welchem Bereich besonders viele erwachsene Fliegen auftreten.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Zeigt, wo besonders viele Fliegen auftreten",
+          "Reduziert erwachsene Tiere",
+          "Hilft die Quelle besser einzugrenzen"
+        ]
+      },
+      {
+        "role": "better",
+        "label": "Wenn Spalten auffallen",
+        "product_type": "Dichtungs- oder Reparaturmaterial",
+        "reason": "Sinnvoll, wenn tatsächlich kleine Eintrittsstellen am Fenster oder Rahmen entdeckt werden.",
+        "affiliate_url": "",
+        "cta_label": "Produkt ansehen",
+        "benefits": [
+          "Schließt gefundene Spalten am Rahmen",
+          "Hilft gegen wiederkehrenden Zuflug",
+          "Günstige gezielte Reparatur"
+        ]
+      }
+    ],
+    "prevention": [
+      "Mögliche Brutquellen sauber halten.",
+      "Fensterrahmen und Dichtungen kontrollieren.",
+      "Lebensmittel und Abfälle geschlossen lagern."
+    ],
+    "faq": [
+      {
+        "question": "Können Fliegen entstehen, obwohl das Fenster geschlossen ist?",
+        "answer": "Ja. Wenn sich eine Brutquelle bereits in der Wohnung befindet, können neue erwachsene Fliegen auftauchen, ohne dass sie gerade durch ein Fenster hineinfliegen."
+      },
+      {
+        "question": "Soll ich zuerst nach Löchern am Fenster suchen?",
+        "answer": "Das ist sinnvoll, aber gleichzeitig sollten typische Quellen in der Wohnung kontrolliert werden, besonders wenn immer wieder neue Tiere auftauchen."
+      }
+    ],
+    "related_problem_ids": [
+      "FL001",
+      "FL050",
+      "FL022",
+      "FL028"
+    ],
+    "seo_title": "Fliegen trotz geschlossenem Fenster: Woher kommen sie?",
+    "meta_description": "Fliegen trotz geschlossenem Fenster? Prüfe versteckte Brutquellen, kleine Eintrittsstellen und typische Ursachen in der Wohnung.",
+    "status": "APPROVED",
+    "free_solution": {
+      "title": "Quelle in der Wohnung suchen",
+      "reason": "Kontrolliere Biomüll, Lebensmittelreste, Pflanzen, Abflüsse und andere mögliche Brutquellen."
+    },
+    "recommended_product_role": "cheap"
+  }
+]

@@ -1,0 +1,21 @@
+# Dependencies / build output
+node_modules/
+dist/
+.astro/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Vercel local project metadata
+.vercel/
+
+# Local content-engine review output (Supabase is source of truth)
+generated/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

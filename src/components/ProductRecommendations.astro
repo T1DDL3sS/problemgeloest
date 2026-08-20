@@ -1,0 +1,22 @@
+---
+const { products = [] } = Astro.props;
+---
+{products.length > 0 && (
+  <section class="content-section">
+    <div class="section-heading">
+      <span class="section-icon" aria-hidden="true">✓</span>
+      <h2>Welche Lösung passt zu dir?</h2>
+    </div>
+    <p class="disclosure">Noch ohne Affiliate-Links. Hier testen wir zunächst Aufbau und Nutzen der Empfehlungen.</p>
+    <div class="solution-grid">
+      {products.map((product, index) => (
+        <article class:list={["solution-card", index === products.length - 1 && products.length > 1 ? "featured" : ""]}>
+          <span class="pill">{product.label}</span>
+          <h3>{product.product_type}</h3>
+          <p>{product.reason}</p>
+          <span class="solution-action placeholder">Produkt folgt</span>
+        </article>
+      ))}
+    </div>
+  </section>
+)}
